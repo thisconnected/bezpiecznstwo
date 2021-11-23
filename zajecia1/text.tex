@@ -1,0 +1,74 @@
+% Created 2021-11-05 pią 18:04
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\author{Patryk Kaniewski}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Patryk Kaniewski},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents \clearpage\section{Firma kurierska paczki caly kraj}
+\label{sec:orgfa62d01}
+\begin{enumerate}
+\item Okreslic jakie usługi i aplikacje będą wykorzystywane
+\item Dokonać analizy zagrozen i ryzyk związanych z użytkownikiem aplikacji, usług i infrastruktury sieciowej
+\item Sklasifikowac zagrozenia pod bezpiecznstwa ocenic realność i przechowywanych w systemie
+\end{enumerate}
+
+\section{Okreslic jakie usługi i aplikacje będą wykorzystywane}
+\label{sec:orgba3a39a}
+App1 odbierajacy musi otrzymwac powiadomienia (mail/aplikacja)
+App2 Kurier musi mieć możliwość odebrania paczki z sortownii (skanowania jak wkłada do samochodu) musi mieć dostep do listy wszystkich paczek (adresy ITP.) 
+App3 Sortownia rejestrować/wyrejestrowywać, musi mieć możliwość organizowania paczek do transportu
+App4/API Przyjmowanie zlecen od klientów (np. sklepy internetowe)
+
+
+
+App1 front end (mail/applikacja na telefon)
+App2 front end (aplikacja dla kuriera) + potwierdzenie przyjęcia
+App3 Back end
+App4/API frontend (sklep) + backend (przyjmowanie)
+
+
+\section{Dokonać analizy zagrozen i ryzyk związanych z użytkownikiem aplikacji, usług i infrastruktury sieciowej}
+\label{sec:org7f43e7b}
+App1 
+    • zagrozenie tylko lokalne dla odbierającego, komunikacja jest jedno kierunkowa
+App2
+    • Dane osobowe odbierających, możliwość rejestrowania paczek jako dostarczone (kradzież paczek)
+App3:
+    • Pelna kontrola nad systemem (kradzież paczek, danych, tajemnic firmowych)
+App4/API(front)
+    • zagrozenie tylko lokalne dla zlecającego
+App4 backend
+    • zmiana danych przesylki, kradzież, dane osobowe
+
+\section{Sklasifikowac zagrozenia pod bezpiecznstwa ocenic realność i przechowywanych w systemie}
+\label{sec:org71ed77f}
+(glowne wektory), zle programowanie, denial of service sa zawsze
+
+App1 – zle programowanie
+App2 – kradzież, slabe zabezpieczenia (fałszowanie potwierdzen)
+App3 – czynnik ludzki (zabezpieczenia fizyczne) i wektory App3, App4/API (zla konfiguracja, podszywanie się)
+App4 – man in the middle
+\end{document}

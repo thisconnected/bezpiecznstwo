@@ -1,0 +1,39 @@
+* Firma kurierska paczki caly kraj
+    1. Okreslic jakie usługi i aplikacje będą wykorzystywane
+    2. Dokonać analizy zagrozen i ryzyk związanych z użytkownikiem aplikacji, usług i infrastruktury sieciowej
+    3. Sklasifikowac zagrozenia pod bezpiecznstwa ocenic realność i przechowywanych w systemie
+
+* Okreslic jakie usługi i aplikacje będą wykorzystywane
+App1 odbierajacy musi otrzymwac powiadomienia (mail/aplikacja)
+App2 Kurier musi mieć możliwość odebrania paczki z sortownii (skanowania jak wkłada do samochodu) musi mieć dostep do listy wszystkich paczek (adresy ITP.) 
+App3 Sortownia rejestrować/wyrejestrowywać, musi mieć możliwość organizowania paczek do transportu
+App4/API Przyjmowanie zlecen od klientów (np. sklepy internetowe)
+
+
+
+App1 front end (mail/applikacja na telefon)
+App2 front end (aplikacja dla kuriera) + potwierdzenie przyjęcia
+App3 Back end
+App4/API frontend (sklep) + backend (przyjmowanie)
+
+
+* Dokonać analizy zagrozen i ryzyk związanych z użytkownikiem aplikacji, usług i infrastruktury sieciowej
+App1 
+    • zagrozenie tylko lokalne dla odbierającego, komunikacja jest jedno kierunkowa
+App2
+    • Dane osobowe odbierających, możliwość rejestrowania paczek jako dostarczone (kradzież paczek)
+App3:
+    • Pelna kontrola nad systemem (kradzież paczek, danych, tajemnic firmowych)
+App4/API(front)
+    • zagrozenie tylko lokalne dla zlecającego
+App4 backend
+    • zmiana danych przesylki, kradzież, dane osobowe
+
+* Sklasifikowac zagrozenia pod bezpiecznstwa ocenic realność i przechowywanych w systemie
+(glowne wektory), zle programowanie, denial of service sa zawsze
+
+App1 – zle programowanie
+App2 – kradzież, slabe zabezpieczenia (fałszowanie potwierdzen)
+App3 – czynnik ludzki (zabezpieczenia fizyczne) i wektory App3, App4/API (zla konfiguracja, podszywanie się)
+App4 – man in the middle
+

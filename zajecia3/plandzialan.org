@@ -1,0 +1,40 @@
+* TODO Analiza wymagan (lanie wody)                                  :kijo:
+
+* Diagramy                                                           :patryk:
+** Klas
+** DPU
+** Sekwencji
+** TODO Wdrozenia
+
+
+* Analiza zagrożeń i ryzyk związanych z użytkowaniem aplikacji, usług i infrastruktury sieciowej. :patryk:
+
+Najpierw opisac zagrozenia i ryzyka
+pozniej jakas metoda
+
+
+** Ladne tabelki                                                      :kijo:
+Ryzyka sprzętu
+
+Ryzyka aplikacji
+
+Ryzyka usług
+
+Infrastruktura sieciowa
+
+Do analizy ryzyka użyto metody FMEA zgodnej ze standardem ISO 27001:2013
+Ryzyko oceniamy wg. Wzoru WPR=ZxRxW gdzie:
+Z - znaczenie zdarzenia
+R- szansa wykorzystania podatności lub prawdopodobieństwo zdarzenia
+W- szansa wykrycia zdarzenia
+Wszystkie współczynniki określamy w pięciostopniowej skali:
+
+** Szacunkowe koszty strat                                            :kijo:
+
+
+* Polityki bezpieczenstwa                                            :patryk:
+- Dostęp do danych poufnych na stacjach pracowniczych
+- Zabezpieczenie stacji roboczych
+- Hasła
+- Edukacja pracowników w zakresie bezpieczeństwa
+- Transport danych poufnych na niezabezpieczonych nośnikach

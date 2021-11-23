@@ -1,0 +1,19 @@
+* zycie paczki
+
+1. Wygenerowanie etykiety (NADANO)
+
+   Repeat until nexthop == odbiorca
+2. Odebrana przez kuriera (W DRODZE)
+3. Przyjeto w oddziale, wygenerowano nexthop, przydzielone do nastepnego kuria (PRZYJETA W ODDZIALE)
+   endloop
+4. Odebrana przez kuriera (W DRODZE)
+5. Odbiorca odbiera (DOSTARCZONA)
+
+
+Alternatywny
+4. Odebrana przez kuriera (W DRODZE)
+5. Odbiorcy nie ma (W DRODZE)
+6. back to 3.
+   
+
+   
