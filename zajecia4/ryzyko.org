@@ -1,0 +1,39 @@
+* FMEA
+| zdarzenie           | skutki zdarzenia | przyczyny zdarzenia | dzialania zapobiegawcze | Z | R | w | WPR | opis |
+|---------------------+------------------+---------------------+-------------------------+---+---+---+-----+------|
+| Brak pradu          |                  |                     |                         |   |   |   |     |      |
+| kradziez            |                  |                     |                         |   |   |   |     |      |
+| wandalizm           |                  |                     |                         |   |   |   |     |      |
+| blad w eksploatacji |                  |                     |                         |   |   |   |     |      |
+| pozar               |                  |                     |                         |   |   |   |     |      |
+|---------------------+------------------+---------------------+-------------------------+---+---+---+-----+------|
+|                     |                  |                     |                         |   |   |   |     |      |
+
+
+
+* polityki bezpieczenstwa
+** definicje bezpieczenstwa
+1. Poufnosc
+2. Integralnosc
+3. Uwierzytalnianie
+4. Dostepnosc (kontrola dostepu)
+** hasla
+1. Zmiana hasel co min. dwa miesiace
+2. Haslo musi zawierac albo:
+   1. 25 znaków
+   2. 12 znaków i przynajmniej jedna litere, cyfra i znak specjalny
+** Zabezpieczenie stacji roboczych
+1. Wymaganie wygaszania sesji po nieaktywnosci 15min
+2. Aktualne oprogramowanie specjalistyczne i systemowe
+3. Zabezpieczony dostep do stacji roboczych (haslo)
+4. Szyfrowanie calych woluminow
+** Edukacja pracowników w zakresie bezpieczeństwa
+Okresowe szkolenia ws. bezpieczenstwa informacji
+- szkolenie panelowe - zabezpieczenie stanowiska
+- szkolenie panelowe - swiadomosc problemow bezpieczenstwa
+- losowe symulowanie szkolenie z inzynierii socjalnej
+
+** Transport danych poufnych na niezabezpieczonych nośnikach
+1. Zabrania sie kopiowania, przenoszenia danych firmowych nie oznaczonych do publikacji zewnętrznej na żadne nosniki danych
+
+
