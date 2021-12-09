@@ -1,0 +1,321 @@
+#+TITLE: System teleinformatyczny dla firmy kurierskiej
+#+AUTHOR: Patryk Kaniewski
+#+AUTHOR: Jakub Kijo
+#+LANGUAGE: pl
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+LaTeX_CLASS: article
+#+begin_src emacs-lisp :exports results :results none :eval export
+      (make-variable-buffer-local 'org-latex-title-command)
+      (setq org-latex-title-command (concat
+    "\\begin{titlepage}\n"
+    "\\begin{center}\n"
+    "{\\Huge System teleinformatyczny dla firmy kurierskiej \\par}\n"
+    "\\vspace{2cm}\n"
+    "{\\Large Patryk Kaniewski \\par\n}"
+    "{\\Large Jakub Kijo \\par\n}"
+    "\\vspace{2cm}\n"
+    "{\\large 2021-12-07 }\n"
+    "\\end{center}\n"
+    "\\end{titlepage}\n"))
+#+end_src
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \usepackage[yyyymmdd]{datetime}
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \graphicspath{ {/home/thisconnect/pwsz/} }
+#+LATEX_HEADER: \pagestyle{fancyplain}
+#+LATEX_HEADER: \chead{Projekt firmy kurierskiej}
+#+LATEX_HEADER: \lhead{\includegraphics{pusb.png}}
+#+LATEX_HEADER: \rhead{}
+#+LATEX_HEADER: \cfoot{\thepage}
+#+LATEX_HEADER: \lfoot{}
+#+LATEX_HEADER: \rfoot{Patryk Kaniewski \linebreak Jakub Kijo}
+
+
+* Analiza Wymagań
+** Opis firmy
+
+Firma kurierska z przesyłkami na cały kraj, posiada kilka sortowni w różnych częściach kraju, oraz bardzo wielu kurierów odpowiedzialnych za transportowanie paczek między nimi, oraz bezpośrednio do odbiorców. Posiada też bazę klientów (inne firmy), którzy używają API aby tworzyć i nadawać przesyłki do indywidualnych odbiorców.  Odbiorca zamówienia otrzymuję powiadomienia o stanie paczki.
+** Opis problemu
+
+
+Kurier potrzebuję urządzenia z aplikacją umożliwiającą skanowanie paczek, które wchodzą do sortowni, wychodzą z niej. Otrzymuję od klientów lub dostarcza odbiorcą. Musi też mieć dostęp do danych adresowych klientów oraz odbiorców. Kurier nie pobiera pieniędzy od odbiorcy ze względu na to że firma kurierska nie obsługuje płatności przy odbiorze paczki. Owe urządzenie musi też mieć możliwość zabezpieczenia w przypadku kradzieży, np za pomocą hasła, by poufne dane nie dostały się w niepowołane ręce.
+
+Każda sortownia powinna posiadać redundantne serwery, które będą odpowiedzialny z przydzielanie paczek kurierom, oraz posiadać listę paczek która aktualnie jest na sortowni.
+
+Odbiorca powinien posiadać możliwość śledzenia przesyłki na podstawie jej numeru poprzez aplikację na urządzenie mobilne.
+
+Klient powinien móc poprzez API zarejestrować paczkę oraz wygenerować dla niej etykietę. Najbliższa sortownia przydzieli również kuriera który w najbliższym czasie odbierze paczkę od zleceniodawcy
+
+
+** Propozycja projektu
+
+Na podstawie tych informacji klarują nam się 4 aplikację:
+
+1. Aplikację dla odbiorcy umożliwiającą śledzenie przesyłki.
+
+2. Aplikacja dla kuriera, umożliwiająca skanowanie zarejestrowanych paczek oraz komunikująca się z sortownią która zmienia stan paczki.
+
+3. Aplikacja dla sortowni, która odpowiada za całą logikę naszego systemu, przydziela paczki kurierom oraz wysyła jest do innych sortowni. Posiada również historię realizacja przesyłek.
+   
+4. API dla klienta, umożliwiającą generowanie etykiet oraz śledzenie przesyłki
+
+   Dalej zwane:
+   + App1
+   + App2
+   + App3
+   + App4
+
+Koszt (sprzętowy) rozwiązania jest wprost proporcjonalny do ilości kurierów i sortowni
+
+*** Propozycja sprzętu
+**** Serwer
+Serwer DELL  PowerEdge R6515 Rack Server
+| Element | Ilośc | Specyfikacja                     |
+|---------+-------+----------------------------------|
+| /       |     <  | <                                |
+| CPU     |     1 | AMD EPYC 7313P                   |
+| RAM     |     4 | 8GB RDIMM 3200MT                 |
+| SSD     |     4 | 480GB SATA 2.5in Hot-plug        |
+| PSU     |     2 | Hot-plug 550W                    |
+| NIC     |     2 | Broadcom 5720 1GbE LOM Mezz Card |
+| OS      |     1 | Red Hat Enterprise Linux 8.4 x64 |
+|---------+-------+----------------------------------|
+|         | Koszt | 14263 PLN                        |
+**** Stacja robocza
+ThinkCentre M90q Gen 2 Tiny
+| Element | Ilośc | Specyfikacja          |
+|---------+-------+-----------------------|
+| /       | <     | <                     |
+| CPU     | 1     | Intel i7-11700T       |
+| RAM     |       | 16 GB DDR4 3200MT     |
+| SSD     | 1     | 512 GB SSD gen4       |
+| OS      |       | Fedora 35 Workstation |
+|---------+-------+-----------------------|
+|         | Koszt | 3500 PLN              |
+**** Urządzenie kuriera
+Smartphone Samsung Galaxy A32
+
+Koszt 1200 PLN
+
+*** Proponowane rozwiązanie
+
+Proponowane rozwiązanie będzie składać sie głownie z 3 elementów
+
+**** Sortownia
+
++ podwójnie redundantne połaczenie do sieci (dwóch dostawców usług internetowych)  
+
+***** pracownik sortowni
+
+Wydaje oraz przyjmuje paczki od kurierów, wymagane połaczenie do serwera jak i serwera do centrali
+   
++  stacja robocza
+***** serwer1
+***** serwer2 (mirror)
+**** Centrala
+***** serwer1
+***** serwer2 (mirror)
+**** Kurier
++ podwójnie redundantne połaczenie do sieci (dwóch dostawców usług GSM)
+
+***** kurier
+
+Transportuje paczki pomiędzy sortowniami oraz do klienta i do  odbiorcy, wymaganie połaczenie
+
++ smartphone
+  
+
+*** Diagramy
+**** Diagram przypadków użycia
+#+attr_latex: :width 400px
+[[./dpu.png]]
+#+BEGIN_EXPORT latex
+\pagebreak
+#+END_EXPORT
+**** Diagram klas App3
+[[./app3_klas.png]]
+#+BEGIN_EXPORT latex
+\pagebreak
+#+END_EXPORT
+**** Diagram klas App3 z wyszczególnionymi typami zagrożeń
+[[./app3_bezp.png]]
+#+BEGIN_EXPORT latex
+\pagebreak
+#+END_EXPORT
+**** Diagram Sekwencji
+[[./app3_sekw.png]]
+#+BEGIN_EXPORT latex
+\pagebreak
+#+END_EXPORT
+
+**** Diagram wdrożenia
+***** Sortownia
+[[./depl_sort.png]]
+***** Kurier
+[[./depl_kurier.png]]
+#+BEGIN_EXPORT latex
+\pagebreak
+#+END_EXPORT
+***** Centrala
+[[./depl_centrala.png]]
+
+#+BEGIN_EXPORT latex
+\pagebreak
+#+END_EXPORT
+* Analiza Ryzyka 
+** Zagrożenia systemu
+Brak prądu
+Kradzież
+Wandalizm
+Błąd w eksploatacji
+pożar
+Brak dostępu do sieci
+Siły natury
+
+** Zagrożenia aplikacji
+Brak dostępu do usługi
+Nieprawidłowe działanie
+Luki bezpieczeństwa
+
+*** App4
++ Brak dostępu do usługobiorcy
++ Nieprawidłowe dane
++ Nieupoważniony dostęp do API
++ Problemy z płatnościami
+
+*** App3
++ Kradzież paczek
++ Wyciek danych o paczkach
++ Wyciek danych o odbierających
+
+*** App2
++ Kradzież paczek
++ Wyciek danych o paczkach
++ Wyciek danych o odbierających
+
+*** App1
++ Brak dostępu do usługi
++ Przechwycenie paczki
+
+** Ryzyko
+Do analizy ryzyka użyto metody FMEA zgodnej ze standardem ISO 27001:2013 Ryzyko oceniamy wg. Wzoru WPR=ZxRxW gdzie: 
+
+Z - znaczenie zdarzenia 
+R- szansa wykorzystania podatności lub prawdopodobieństwo zdarzenia
+W- szansa wykrycia zdarzenia 
+
+Wszystkie współczynniki określamy w pięciostopniowej skali:
+
+*** Kryteria dla wskaźnika Z
+
+#+ATTR_LATEX: :center nil
++-------+-----------------------------------------------------------------------------------------------+
+| OCENA | Określenie znaczenia                                                                          |
++-------+-----------------------------------------------------------------------------------------------+
+|     1 | Zdarzenie nie wpływa na funkcjonowanie przedsiębiorstwa                                       |
++-------+-----------------------------------------------------------------------------------------------+
+|     2 | Nieznaczne utrudniena dla bezpieczeństwa                                                      |
+|       |i brak znaczenia dla funkcjonowanie przedsiębiorstwa                                           |
++-------+-----------------------------------------------------------------------------------------------+
+|     3 | Małe utrudnienia dla bezpieczeństwa i przedsiębiorstwa                                        |
++-------+-----------------------------------------------------------------------------------------------+
+|     4 | Znaczne utrudnienia dla bezpieczeństwa                                                        |
+|       |i funkcjonowania przedsiębiorstwa                                                              |
++-------+-----------------------------------------------------------------------------------------------+
+|     5 | Niemożliwość funkcjonowanie przedsiębiorstwa                                                  |
++-------+-----------------------------------------------------------------------------------------------+
+
+*** Kryteria dla wskaźnika R
+
+#+ATTR_LATEX: :center nil
++-------+-----------------------------------------------+
+| OCENA | Szansa wystąpienia ( w procentach na 30 dni ) |
++-------+-----------------------------------------------+
+|     1 | znikome ( <1%)                                |
++-------+-----------------------------------------------+
+|     2 | rzadkie ( 1% - 10 %)                          |
++-------+-----------------------------------------------+
+|     3 | średnie ( 10% - 40 % )                        |
++-------+-----------------------------------------------+
+|     4 | prawdopodobne ( 40% - 70%)                    |
++-------+-----------------------------------------------+
+|     5 | pewne ( 70%-100%)                             |
++-------+-----------------------------------------------+
+ 
+*** Kryteria dla wskaźnika W
+
+#+ATTR_LATEX: :center nil
++-------+--------------------+
+| OCENA | Możliwość wykrycia |
++-------+--------------------+
+|     1 | pewne              |
++-------+--------------------+
+|     2 | łatwe              |
++-------+--------------------+
+|     3 | średnie            |
++-------+--------------------+
+|     4 | trudne             |
++-------+--------------------+
+|     5 | prawie niemożliwe  |
++-------+--------------------+
+
+*** Kryterium WPR
+#+ATTR_LATEX: :center nil
++--------+----------------------------------------+
+| Punkty | Kryterium WPR                          |
++--------+----------------------------------------+
+|    <10 | Nie wymaga reakcji                     |
++--------+----------------------------------------+
+|    <15 | Obserwacja                             |
++--------+----------------------------------------+
+|    <50 | Wymaga modyfikacji sposobu działania   |
++--------+----------------------------------------+
+|    <75 | Wymaga zmiany sposobu postępowania     |
++--------+----------------------------------------+
+|    >75 | Wyłączenie procesu lub zmiany globalne |
++--------+----------------------------------------+
+
+
+
+
+
+
+
+
+* Polityki bezpieczenstwa                                          
+** Definicje bezpieczenstwa
+1. Poufność - uniemożliwienie dostępu do danych osobom do tego szczególnie nie uprawnionym
+2. Integralność - zapewnienie nienaruszalności danych przez osoby do tego nieuprawnione
+3. Uwierzytalnianie
+   1. Identyfikacja - deklaracja tożsamości
+   2. Uwierzytalnie - weryfikacja podanej tożsamości
+   3. Autoryzacja - nadanie danej tożsamości uprawnień do manipulacji i/lub odczytu danych
+4. Dostępność - zapewnienie prostego i solidnego dostępu do danych
+5. Anonimizacja   
+** Zabezpieczenie stacji roboczych
+1. Wymaganie wygaszania sesji po nieaktywnosci 15 minut
+2. Aktualne oprogramowanie specjalistyczne i systemowe
+3. Zabezpieczony dostep do stacji roboczych.
+   1. Weryfikacja pierwszego etapu - Hasło
+   2. Weryfikacja drugiego etapu - Klucz
+4. Szyfrowanie całych woluminów
+** Bezpieczeństwo danych
+1. Wszystkie dane muszą być przechowywane w 3 kopiach
+   1. Redundacja - na systemie przechowującym dane musi być wykorzystane powielanie danych
+   2. Backup - wykonywanie dziennych przyrostowych kopiach zapasowych i miesięcznych kopiach pelnych.
+   3. Offsite backup - wykonanie tygodniowych kopii zapasowych do innej placówki   
+** Polityka Haseł
+1. Zmiana haseł co 2 miesiące
+2. Haslo musi zawierac albo:
+   1. przynajmniej 30 znaków
+   2. przynajmniej 16 znaków i przynajmniej jedna litere, cyfra i znak specjalny
+** Edukacja pracowników w zakresie bezpieczeństwa
+Okresowe szkolenia ws. bezpieczenstwa informacji
+1. Szkolenie panelowe - zabezpieczenie stanowiska
+2. Szkolenie panelowe - swiadomosc problemow bezpieczenstwa
+3. Losowe symulowanie szkolenie z inżynierii socjalnej
+
+** Transport danych poufnych
+1. Zabrania sie kopiowania, przenoszenia danych firmowych nie oznaczonych do publikacji zewnętrznej na żadne nośniki danych
+2. Wymagany transport danych na nosnikach zewnętrznych wymaga szyfrowania danych za pomocą klucza publicznego podmiotu ubiegającego się o transport
+
