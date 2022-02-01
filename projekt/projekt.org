@@ -30,12 +30,14 @@
 #+LATEX_HEADER: \lfoot{}
 #+LATEX_HEADER: \rfoot{Patryk Kaniewski \linebreak Jakub Kijo}
 
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+
 
 * Analiza Wymagań
-** Opis firmy
+** Opis firmy                                                     :noexport:
 
 Firma kurierska z przesyłkami na cały kraj, posiada kilka sortowni w różnych częściach kraju, oraz bardzo wielu kurierów odpowiedzialnych za transportowanie paczek między nimi, oraz bezpośrednio do odbiorców. Posiada też bazę klientów (inne firmy), którzy używają API aby tworzyć i nadawać przesyłki do indywidualnych odbiorców.  Odbiorca zamówienia otrzymuję powiadomienia o stanie paczki.
-** Opis problemu
+** Opis problemu                                                  :noexport:
 
 
 Kurier potrzebuję urządzenia z aplikacją umożliwiającą skanowanie paczek, które wchodzą do sortowni, wychodzą z niej. Otrzymuję od klientów lub dostarcza odbiorcą. Musi też mieć dostęp do danych adresowych klientów oraz odbiorców. Kurier nie pobiera pieniędzy od odbiorcy ze względu na to że firma kurierska nie obsługuje płatności przy odbiorze paczki. Owe urządzenie musi też mieć możliwość zabezpieczenia w przypadku kradzieży, np za pomocą hasła, by poufne dane nie dostały się w niepowołane ręce.
@@ -67,7 +69,7 @@ Na podstawie tych informacji klarują nam się 4 aplikację:
 
 Koszt (sprzętowy) rozwiązania jest wprost proporcjonalny do ilości kurierów i sortowni
 
-*** Propozycja sprzętu
+*** Propozycja sprzętu                                           :noexport:
 **** Serwer
 Serwer DELL  PowerEdge R6515 Rack Server
 | Element | Ilośc | Specyfikacja                     |
@@ -97,7 +99,7 @@ Smartphone Samsung Galaxy A32
 
 Koszt 1200 PLN
 
-*** Proponowane rozwiązanie
+*** Proponowane rozwiązanie                                      :noexport:
 
 Proponowane rozwiązanie będzie składać sie głownie z 3 elementów
 
@@ -137,7 +139,7 @@ Transportuje paczki pomiędzy sortowniami oraz do klienta i do  odbiorcy, wymaga
 #+BEGIN_EXPORT latex
 \pagebreak
 #+END_EXPORT
-**** Diagram klas App3 z wyszczególnionymi typami zagrożeń
+**** Diagram klas App3 z wyszczególnionymi elementami bezpieczeństwa systemu
 [[./app3_bezp.png]]
 #+BEGIN_EXPORT latex
 \pagebreak
@@ -162,20 +164,20 @@ Transportuje paczki pomiędzy sortowniami oraz do klienta i do  odbiorcy, wymaga
 #+BEGIN_EXPORT latex
 \pagebreak
 #+END_EXPORT
-* Analiza Ryzyka 
+* Analiza Ryzyka                                                   :noexport:
 ** Zagrożenia systemu
-Brak prądu
-Kradzież
-Wandalizm
-Błąd w eksploatacji
-pożar
-Brak dostępu do sieci
-Siły natury
++ Brak prądu
++ Kradzież
++ Wandalizm
++ Błąd w eksploatacji
++ pożar
++ Brak dostępu do sieci
++ Siły natury
 
 ** Zagrożenia aplikacji
-Brak dostępu do usługi
-Nieprawidłowe działanie
-Luki bezpieczeństwa
++ Brak dostępu do usługi
++ Nieprawidłowe działanie
++ Luki bezpieczeństwa
 
 *** App4
 + Brak dostępu do usługobiorcy
@@ -197,7 +199,7 @@ Luki bezpieczeństwa
 + Brak dostępu do usługi
 + Przechwycenie paczki
 
-** Ryzyko
+** Ryzyko                                                         :noexport:
 Do analizy ryzyka użyto metody FMEA zgodnej ze standardem ISO 27001:2013 Ryzyko oceniamy wg. Wzoru WPR=ZxRxW gdzie: 
 
 Z - znaczenie zdarzenia 
@@ -275,8 +277,45 @@ Wszystkie współczynniki określamy w pięciostopniowej skali:
 |    >75 | Wyłączenie procesu lub zmiany globalne |
 +--------+----------------------------------------+
 
+#+begin_export latex
+{\scriptsize
+#+end_export
 
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| Zdarzenie             | Skutki zdarzenia                                   | Przyczyny zdarzenia                                           | Działania zapobiegawcze                                                                | Z | R | W | WPR | Opis             |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| Brak prądu            | Brak dostępu                                       | Czynnik zewnętrzny                                            | Posiadanie własnych                                                                    | 4 | 2 | 1 |   8 | Nie wymaga       |
+|                       |do sprzętu,brak                                     | lub wewnętrzny                                                | generatorów, albo baterii                                                              |   |   |   |     | akcji            |
+|                       | możliwości pracy                                   |(np Pogoda lub zaniedbanie)                                    | na wypadek braku prądu.                                                                |   |   |   |     |                  |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| Kradzież              | Brak dostępu                                       | Czynnik zewnętrzny                                            | Ograniczenie dostępu                                                                   | 2 | 2 | 1 |   4 | Nie wymaga       |
+|                       |do sprzętu,                                         |( np. osoba niepowołana )                                      | osobom niepowołanym,                                                                   |   |   |   |     | akcji            |
+|                       |brak możliwości pracy                               |                                                               | zainstalowanie systemu                                                                 |   |   |   |     |                  |
+|                       |                                                    |                                                               | przeciw włamaniom.                                                                     |   |   |   |     |                  |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| Wandalizm             | Zniszczenie sprzętu,                               | Czynnik zewnętrzny                                            | Ograniczenie dostępu                                                                   | 2 | 2 | 2 |   8 | Nie wymaga       |
+|                       | brak możliwości pracy                              | ( np. osoba niepowołana )                                     | osobom niepowołanym,                                                                   |   |   |   |     | akcji            |
+|                       |                                                    |                                                               | zainstalowanie systemu                                                                 |   |   |   |     |                  |
+|                       |                                                    |                                                               |przeciw włamaniom.                                                                      |   |   |   |     |                  |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| Błąd w eksploatacji   | Zniszczenie sprzętu,                               | Czynnik wewnętrzny                                            | Szkolenie, poprawnej                                                                   | 1 | 3 | 4 |  12 | Obserwacja       |
+|                       | brak możliwości pracy                              |( np. zaniedbanie)                                             |eksploatacji sprzętu                                                                    |   |   |   |     |                  |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| pożar                 | Zniszczenie sprzętu,                               | Czynnik zewnętrzny                                            | Dostosowanie się do norm Ppoż                                                          | 4 | 1 | 1 |   4 | Nie wymaga       |
+|                       | brak możliwości pracy                              | lub wewnętrzny                                                |i instalacja takowych systemów.                                                         |   |   |   |     | akcji            |
+|                       |                                                    |(np Pogoda lub zaniedbanie)                                    |                                                                                        |   |   |   |     |                  |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| Brak dostępu          | Brak możliwości komunikacji,                       | Czynnik zewnętrzny                                            | Posiadanie wielu źródeł                                                                | 4 | 2 | 1 |   8 | Nie wymaga akcji |
+|do sieci               | brak możliwości pracy                              | (np Pogoda )                                                  |dostępu do sieci                                                                        |   |   |   |     |                  |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
+| Siły natury           | Zniszczenie sprzętu,                               | Czynnik zewnętrzny                                            | W zależności od zagrożenia,                                                            | 4 | 1 | 1 |   4 | Nie wymaga akcji |
+|                       | brak możliwości pracy                              |(np Pogoda )                                                   | wprowadzenie odpowiedniego                                                             |   |   |   |     |                  |
+|                       |                                                    |                                                               |systemu lub zasad postępowania.                                                         |   |   |   |     |                  |
++-----------------------+----------------------------------------------------+---------------------------------------------------------------+----------------------------------------------------------------------------------------+---+---+---+-----+------------------+
 
+#+begin_export latex
+}
+#+end_export
 
 
 
@@ -291,19 +330,49 @@ Wszystkie współczynniki określamy w pięciostopniowej skali:
    2. Uwierzytalnie - weryfikacja podanej tożsamości
    3. Autoryzacja - nadanie danej tożsamości uprawnień do manipulacji i/lub odczytu danych
 4. Dostępność - zapewnienie prostego i solidnego dostępu do danych
-5. Anonimizacja   
-** Zabezpieczenie stacji roboczych
-1. Wymaganie wygaszania sesji po nieaktywnosci 15 minut
-2. Aktualne oprogramowanie specjalistyczne i systemowe
-3. Zabezpieczony dostep do stacji roboczych.
-   1. Weryfikacja pierwszego etapu - Hasło
-   2. Weryfikacja drugiego etapu - Klucz
-4. Szyfrowanie całych woluminów
+*** Elementy systemów bezpieczeństwa
+1. Personel
+   1. Dobrze przeszkolony personel w sprawach bezpieczeństwa informacji i inżynierii socjalnej
+2. Infrastruktura sieciowa
+   1. Oparta na redundacji
+   2. Mikrosegmentacja poprzez fizyczne i logiczne rodzielenie usług
+3. Serwery i stacje robocze
+   1. Używanie aktualnego oprogramowania
+   2. Zgodne z obecnie przyjętymi dobrymi praktykami
+4. Bezpieczeństwo operacyjne
+   1. Systemy odporne na losowe zdarzenia
+  
 ** Bezpieczeństwo danych
+*** Informacje poufne
+   1. Informacje o realizowanych umowach
+   2. Informacje finansowe firmy
+   3. Statystyki systemów IT
+   4. Dane osobowe odbiorców i nadawców
+   5. Informacje stanowiące o przewadze konkurencyjne
+   6. Inne dane oznaczone jako poufne
+   7. Dane o pracownikach   
+*** Zasada minimalnych uprawnień
+1. System lub człowiek powinien posiadać uprawnienia odczytu tylko do tych systemów i/lub danych które są wymagane do pracy na danym stanowisku
+2. System lub człowiek powinien posiadać uprawnienia zapisu tylko do tych systemów i/lub danych które są wymagane do pracy na danym stanowisku
+
+*** Bezpieczeństwo operacyjne
 1. Wszystkie dane muszą być przechowywane w 3 kopiach
    1. Redundacja - na systemie przechowującym dane musi być wykorzystane powielanie danych
    2. Backup - wykonywanie dziennych przyrostowych kopiach zapasowych i miesięcznych kopiach pelnych.
    3. Offsite backup - wykonanie tygodniowych kopii zapasowych do innej placówki   
+** Zabezpieczenie infrastruktury sieciowej
+1. Ochrona infrastruktury sieciowej powinna być wielowarstwowa
+   1. Zasada minimalnego dostępu
+      1. Dostęp do zasobu lub danych domyślnie zabroniony
+   2. Aktualne oprogramowanie
+   3. Konfiguracja systemów firewall
+** Zabezpieczenie stacji roboczych i serwerów
+1. Wymaganie wygaszania sesji po nieaktywnosci 15 minut
+2. Aktualne oprogramowanie specjalistyczne i systemowe
+3. Zabezpieczony dostep do stacji roboczych
+   1. Weryfikacja pierwszego etapu - Hasło
+   2. Weryfikacja drugiego etapu - Klucz
+4. Szyfrowanie całych woluminów
 ** Polityka Haseł
 1. Zmiana haseł co 2 miesiące
 2. Haslo musi zawierac albo:
@@ -312,10 +381,20 @@ Wszystkie współczynniki określamy w pięciostopniowej skali:
 ** Edukacja pracowników w zakresie bezpieczeństwa
 Okresowe szkolenia ws. bezpieczenstwa informacji
 1. Szkolenie panelowe - zabezpieczenie stanowiska
-2. Szkolenie panelowe - swiadomosc problemow bezpieczenstwa
+2. Szkolenie panelowe - świadomosc problemów bezpieczenstwa
 3. Losowe symulowanie szkolenie z inżynierii socjalnej
+   1. Szkolenie przez symulowanie "praktykanta"
+
+** Odpowiedzialność ochrony danych
+1. Kazdy pracownik jest zobowiazany do ochrony danych dostępowych którymi zarządza
+   1. Hasła
+   2. Klucze kryptograficzne
+   3. Certyfikaty
+   4. Inne mechanizmy dostępu
 
 ** Transport danych poufnych
 1. Zabrania sie kopiowania, przenoszenia danych firmowych nie oznaczonych do publikacji zewnętrznej na żadne nośniki danych
-2. Wymagany transport danych na nosnikach zewnętrznych wymaga szyfrowania danych za pomocą klucza publicznego podmiotu ubiegającego się o transport
+2. Wymagany transport danych
+   1. Na nosnikach zewnętrznych wymaga szyfrowania danych za pomocą klucza publicznego podmiotu ubiegającego się o transport
+   2. Zgoda na przenoszenie danych wydawana jest przez podmiot z uprawnieniami modyfikacji danych
 
