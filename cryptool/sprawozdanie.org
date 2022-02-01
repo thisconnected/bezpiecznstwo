@@ -1,0 +1,143 @@
+#+TITLE: Sprawozdanie \\
+#+TITLE: Badanie róznych algorytmów szyfrowania - Szyfrowanie symetryczne
+#+LANGUAGE: pl
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+
+
+* Cryptool
+Cryptool jest narzędziem do badania róznych algorytmów szyfrowania i funkcji skrótu (/hash function/). Jest to narzędzie głownie edukacyjne chociaż można go używać do szyfrowania zwykłych wiadomości np. z pliku tekstowego
+
+** Wspierane algorytmy symetryczne
+Jcrypttool wspiera wiele symetrycznych algorytmów szyfrowania, oferuje również poza szyframi rożnymi algorytmami szyfrowania symetrycznego, funkcje hashujące oraz kryptografie klucza publicznego. Jest to narzędzie open source, stworzone w jezyku Java i dzięki temu jest dostępne na wszystkich platformach z JVM. Można też w nim znaleźć historyczne metody do zachowania poufności takie jak szyfr cezara czy XOR.
+
+#+Caption: Wspierane przez Jcrypttool algorytmy szyfrowania blokowego
+#+attr_latex: :width 200
+[[./algorytmy.png]]
+
+
+Do ćwiczenia zostały wybranych 3 niewybranych kandydatów na AES (Advanced Encryption Standard): MARS, Twofish i RC6.
+** Wybrane przypadki
+Zostały wybrane 3 przykładowe ciągi tekstowe różnej długości aby zbadać zachowanie z tekstem różnej długości.
+
+Wybrany został klucz długości 128bitów gdyż każdy wybrany algorytm obsługuje. W obecnych czasach długość klucza 128 bitów nie zapewnia ochrony przed złymi aktorami na skali krajów. Część tych algorytmów została również kryptograficznie złamana zmiejszając efektywna długość klucza do złamania.
+*** 9 znaków
+#+begin_src python
+String: password1
+hex (UTF-8): 6170 7373 6f77 6472 0a31
+#+end_src
+
+*** 19 znaków
+#+begin_src python
+String: thisconnectedbomber
+hex (UTF-8): 6874 7369 6f63 6e6e 6365 6574 6264 6d6f
+             6562 0072
+#+end_src
+*** 43 znaki
+#+begin_src python
+String: correcthorsebatterystapleisnotarealpassword
+hex (UTF-8): 6f63 7272 6365 6874 726f 6573 6162 7474
+             7265 7379 6174 6c70 6965 6e73 746f 7261
+             6165 706c 7361 7773 726f 0064
+#+end_src
+
+** MARS
+Mars jest szyfrem blokowym zaproponowanym przez IBM do procesu wybierania AES. Zespół odpowiedzialny był związany w przeszłości z poprzednim standardem DES (Data Encryption Standard) 20 lat wcześniej, który ze względu na wady oraz krótką długość klucza był narażony na ataki typu brute force od samego początku.
+
+Mars posiada długość bloku 128bitów oraz długość klucza od 128-448 bitów
+*** 9 znaków
+#+begin_src python
+  3D8E E0A3 71A2 5E98
+  C237 0E40 04DC 62F6
+#+end_src
+#+comment: 3D8EE0A371A25E98C2370E4004DC62F6
+
+Jak widać zaszyfrowana wiadomość została zpadowana do wielokrotności długości bloku, w tym przypadku 16 bajtów = 128 bitów
+*** 19 znaków
+#+begin_src python
+    7278 CF02 BEB2 49B0
+    523F 0D79 CBF4 C8B3
+    BC74 E3D6 E444 2EC9
+    5123 A2BB C725 0DD7
+
+#+end_src
+#+comment: 7278CF02BEB249B0523F0D79CBF4C8B3BC74E3D6E4442EC95123A2BBC7250DD7
+*** 43 znaki
+#+begin_src python
+      98A2 E7B0 E41D 444D
+      36E0 2931 0DDF 81CF
+      7CBE 2F65 0A56 D777
+      FFF7 FFE3 6AE0 AF58
+      EF73 E99D 142D 7DF3
+      9F4B EE2A 0859 68C2
+
+#+end_src
+#+comment: 98A2E7B0E41D444D36E029310DDF81CF7CBE2F650A56D777FFF7FFE36AE0AF58EF73E99D142D7DF39F4BEE2A085968C2
+** Twofish
+Twofish jest szyfrem blokowym i jednym z finalistów procesu wyboru AES. Wywodzi się on z szyfrów SAFER i Blowfish. Mimo iż nie stał sie AES, Twofish jest jednym ze wspieranych algorytmów przez PGP i w tym przypadku używa klucza 256 bitowego. Głownym celem algorytmu była prędkość poprzez możliwość wykorzystania /space-time tradeoff/ (używanie wiekszej ilości pamięci do rozwiązywania algorytmu. Najwiekszym atutem Twofish jest jego /wolność/, nie opiera sie na żadnych patentach a jego implementacja referencyjna jest domenie publicznej
+
+#+caption: RFC4480 standard openPGP
+#+attr_latex: :width 300
+[[./pgp_twofish.png]]
+*** 9 znakow
+#+begin_src python
+  925C 8DB8 6319 3CEA
+  C5EF 0A34 A40D 2DE2
+#+end_src
+#+comment: 925C8DB863193CEAC5EF0A34A40D2DE2
+
+Tak samo jak MARS, twofish używa długości bloku 128bitów, więc uzyskane wartości powinny przypominać długościa takie jakie zostały uzyskane w MARS
+*** 19 znakow
+#+begin_src python
+    507A 6465 CE02 04F7
+    6D34 958C 0109 5F77
+    4B33 863E 84C0 A068
+    8539 28A5 76CA BA8BA
+#+end_src
+#+comment: 507A6465CE0204F76D34958C01095F774B33863E84C0A068853928A576CABA8BA
+*** 43 znakow
+#+begin_src python
+      53F9 5A53 F6C1 A8E7
+      38AD A8B5 C1AE 334A
+      A1DF D306 E1FB 356D
+      A9F3 AB83 8B7E 1298
+      19D2 25B2 B1B7 97D3
+      192B 84F9 6E78 71EC
+#+end_src
+#+comment: 53F95A53F6C1A8E738ADA8B5C1AE334AA1DFD306E1FB356DA9F3AB838B7E129819D225B2B1B797D3192B84F96E7871EC
+** RC6
+
+RC6 (Rivest cipher 6 - nazwany po głównym projektancie) jest szyfrem blokowym zaproponowanym przez Ron Rivest'a i jego zespół. Algorytm został zapatentowany przez RSA security i został finalistą procesu AES. Wywodzi sie z serii szyfrów RC, i praktycznie składa się z połączenia dwóch niezależnych RC5 z dodatkowymi krokami pomiędzy.  Podobnie jak reszta finalistów, ma długośc bloku 128 bitów oraz może używać różnych długości klucza.
+
+Głownym problemem RC6 było nie zwolnienie z licencjonowania algorytmu po tym jak nie został on wybrany jako standard AES
+*** 9 znakow
+#+begin_src python
+  B740 DC7C F4D0 E0E3
+  42A9 661C 9E00 6422
+#+end_src
+#+comment: B740DC7CF4D0E0E342A9661C9E006422
+*** 19 znakow
+#+begin_src python
+    E2FB 9B62 0E25 FBBB
+    44D9 B079 7486 4F1F
+    D7F9 8871 24CB A2CD
+    DB11 A49C 585D E8DF
+#+end_src
+#+comment: E2FB9B620E25FBBB44D9B07974864F1FD7F9887124CBA2CDDB11A49C585DE8DF
+*** 43 znakow
+#+begin_src python
+      0390 C75E FFAD FBBB
+      E854 C6AF 8F15 40E5
+      F6BE 1F64 2405 1E4F
+      97C6 A0C5 8FC9 887F
+      DB8A 52F0 69A7 B7C5
+      C2E9 B0D1 8A1 05EE9
+#+end_src
+#+comment: 0390C75EFFADFBBBE854C6AF8F1540E5F6BE1F6424051E4F97C6A0C58FC9887FDB8A52F069A7B7C5C2E9B0D18A105EE9
+* Podsumowanie
+Na podstawie zaszyfrowanego tekstu nie możemy stwierdzić bezpieczeństaw algorytmów, jedyną informacja jaką możemy wyciągnąć jest długość klucza która jak okazuje się wśrod finalistów AES jest taka sama. Wszystkie te algorytmy mogą korzystać z różnej długości klucza (zwykle w wielokrotnościach 32 lub 64 bitów). Wszystkie te algorytmy (poza wybranym Rijndael) zostały praktycznie porzucone poza Twofish który dzięki swojej otartości został dodany do m.in openPGP. Nie istnieje dużo analiz kryptograficznych do tych zdecydowanie mniej używanych szyfrów (poza MARS gdzie niektóre rundy zostały pokonane).
+
+Istnienie tych szyfrów jeszcze bardziej straciło sens po tym jak producenci układów scalonych dodali specjalne układy do swoich procesorów pozwalające na szyfrowanie AES w czasie rzeczywistym całkowicie eliminując wszystkie inne algorytmy do szyfrowania na dużą skale. Integracja sprzętowa utrudnia również wszelkiego rodzaju ataki typu /side channel/ (np. monitorowanie poboru prądu czy innych meta statystyk o procesorze) do wykradania sekretów. AES-NI rozszerzenie do procesorów x86 zostało zaimplementowane w procesorach juz w Intel Sandy Bridge (2011) i AMD Bulldozer (2011).
+
+#+caption: Sprzętowe AES w procesorze AMD Jaguar (2013)
+[[./aes_cpu.png]]
