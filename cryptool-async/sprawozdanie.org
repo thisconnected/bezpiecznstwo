@@ -1,0 +1,226 @@
+#+TITLE: Sprawozdanie \\
+#+TITLE: Badanie róznych algorytmów szyfrowania - szyfrowanie asymetryczne
+#+LANGUAGE: pl
+#+LATEX_HEADER: \usepackage[pl]{babel}
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+
+
+* Cryptool
+Cryptool jest narzędziem do badania róznych algorytmów szyfrowania i funkcji skrótu (/hash function/). Jest to narzędzie głownie edukacyjne chociaż można go używać do szyfrowania zwykłych wiadomości np. z pliku tekstowego
+
+** Wspierane algorytmy symetryczne
+Jcrypttool wspiera wiele symetrycznych algorytmów szyfrowania, oferuje również poza szyframi rożnymi algorytmami szyfrowania symetrycznego, funkcje hashujące oraz kryptografie klucza publicznego. Jest to narzędzie open source, stworzone w jezyku Java i dzięki temu jest dostępne na wszystkich platformach z JVM. Można też w nim znaleźć historyczne metody do zachowania poufności takie jak szyfr cezara czy XOR.
+
+
+** Wybrane przypadki
+Całe ćwiczenie zostało wykonane za pomocą narzędzi lini polecenia na systemie Linux.
+
+Przygotowane zostały dwa pliki z tekstem (50 bajtowy plik i 100 bajtowy plik) zakodowanym w domyślnym utf-8.
+
+*** 50 bajtowy plik
+Plik 50 bajtowy jest przygotowany w dwóch wersjach, używając małych i dużych liter aby sprawdzić jak wpływa to na funkcje hashujące tekst.
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports output
+    cat examples/50bfile.txt
+    hexdump examples/50bfile.txt
+    awk '{print toupper($0)}' < examples/50bfile.txt > examples/50bupper.txt
+    cat examples/50bupper.txt
+    hexdump examples/50bupper.txt
+#+end_src
+
+#+RESULTS:
+#+Caption: Różnica w plikach z dużymi i małymi literami
+#+begin_example
+Real sold my in call. Invitation on an advantages
+
+0000000 6552 6c61 7320 6c6f 2064 796d 6920 206e
+0000010 6163 6c6c 202e 6e49 6976 6174 6974 6e6f
+0000020 6f20 206e 6e61 6120 7664 6e61 6174 6567
+0000030 0a73                                   
+0000032
+REAL SOLD MY IN CALL. INVITATION ON AN ADVANTAGESy
+
+0000000 4552 4c41 5320 4c4f 2044 594d 4920 204e
+0000010 4143 4c4c 202e 4e49 4956 4154 4954 4e4f
+0000020 4f20 204e 4e41 4120 5644 4e41 4154 4547
+0000030 0a53                                   
+0000032
+#+end_example
+Jak widać tekst zakodowany w UTF-8 różni się pomiedzy dużymi i małymi literami nieznacznie. Każdy bajt przesunięty jest o 0x20 (poza kropką i dużą litera na początku zdania).
+
+*** 100 bajtowy plik
+
+Plik 100 bajtowy jest przygotowany z części tekstu /lorem ipsum/
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports output
+    cat examples/100bfile.txt
+    hexdump examples/100bfile.txt
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Impedit dolorem quo ullam quam et et a.
+Ea quo laborum eaque sint hic. Laborum ea et in nesciunt cu
+
+0000000 6d49 6570 6964 2074 6f64 6f6c 6572 206d
+0000010 7571 206f 6c75 616c 206d 7571 6d61 6520
+0000020 2074 7465 6120 202e 6145 7120 6f75 6c20
+0000030 6261 726f 6d75 6520 7161 6575 7320 6e69
+0000040 2074 6968 2e63 4c20 6261 726f 6d75 6520
+0000050 2061 7465 6920 206e 656e 6373 7569 746e
+0000060 6320 0a75                              
+0000064
+#+end_example
+
+* Funkcje Skrótu
+Funkcja skrótu (funkcja haszująca, /hash function/) jest funkcja której wynikiem jest stałej długości ciąg bitów niezależny dla dowolnego argumentu funkcji. Sa wykorzystywane w kryptografi głownie w połączeniu z /saltowaniem/ - dodawaniem losowego ciągu znaków do hasła w celu uniemożliwienia ataków typu /rainbow table/ (prekalkukowane hashe haseł - wymagane wtedy jest tylko porownanie hashów z wykradniętej bazy danych z /rainbow table/, czyli tabelą prekalkulowanych hashy).
+
+Funkcje haszujące sa również wykorzystywane w porownywaniu plików, jest to szybsze od porównywania bitowego jak i również może byc dystrybuowane pomiedzy róznymi systemami (zwykle wynik funkcji hashującej jest udostępniany z plikiem online aby sprawdzić poprawność pobierania  oraz oryginalność danego pliku).
+
+Funkcje hashowe które zostały złamane (np. kolizje lub złozoność liczbowa) nadal mogą być wykorzystywane do porównywania plików jednak tylko przed losowymi zmianami i nie jest to bezpieczne dla żadnych innych rozwiązań. W obecnych czasach wypierania jest funkcja SHA1 oraz MD5.
+
+** SHA2 (SHA256)                                  
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports both
+  sha256sum examples/50bfile.txt examples/50bupper.txt  examples/100bfile.txt
+#+end_src
+
+#+RESULTS:
+: 1174aa85039138644566c6c8776bf939682b17fab4ec1bdef8860180b164123d  examples/50bfile.txt
+: 594e9404692b199dc6f1ec6fb81679e383e022b7c19e0e05cfc0f76bdf86adfd  examples/50bupper.txt
+: 246b9020507c302460536cc2f9383b1ac3646e01ae86e35f0b851a2303a395d0  examples/100bfile.txt
+ye
+SHA256 zgodnie ze swoją nazwą podaje wynik długości 256 bitów za pomocą algorytmu SHA2.
+
+** SHA2 (SHA512)
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports source
+  sha512sum examples/50bfile.txt examples/50bupper.txt  examples/100bfile.txt
+#+end_src
+
+#+begin_src
+: 0f5acbc8ef589654b412ff4306e30c14da7325037e3e12bb8b996623deb8f741
+: a4313c2f5bbd6f3292835c1f713f1a2ec23ab289edcc7184d764529abf168646  examples/50bfile.txt
+: 3cd96f4ede8f596af82e6f6b87af5190adb945138614d3082ccaa66801924344
+: de3c2e63ff3423c8026b324e27745bcf8c4fd03b74f21fac0580fb4295524610  examples/50bupper.txt
+: 141b856ad7a435b3b14b6f89b2aee4e742aa95d8d1fa6bc44e348e7cd38911af
+: 585b409bab34d18842bd282c14261d08a56aac05e8236432081f3c999e156677  examples/100bfile.txt
+#+end_src
+SHA512 zgodnie ze swoją nazwą podaje wynik długości 512 bitów za pomocą algorytmu SHA2.
+** MD5
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports both
+  md5sum examples/50bfile.txt examples/50bupper.txt examples/100bfile.txt
+#+end_src
+
+#+RESULTS:
+: 929e763b742a5f79cf50010ffa4c8d2a  examples/50bfile.txt
+: 0bd8394efa522406e9636ab69a05d1fe  examples/50bupper.txty
+: 1014b1df517ab1f8827a0c30549c7a9b  examples/100bfile.txt
+
+Funkcja MD5 podaje wynik w postaci 128 bitowej liczby.
+** RIPEMD-160
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports both
+  rhash --ripemd160 examples/50bfile.txt examples/50bupper.txt  examples/100bfile.txt
+#+end_src
+
+#+RESULTS:
+: 64c6222a3ec147465aa108fdf855fdafb3e92f8c  examples/50bfile.txt
+: a4e8a21c1ac8946cfd9090e706694dfa88a4499f  examples/50bupper.txt
+: 99e87f6bc237fd1925ff0d85e9c8e6244dd6ea48  examples/100bfile.txt
+
+Funkcja RIPEMD-160 zgodnie z nazwa posiada wynik 160 bitowy.
+* Podpis Cyfrowy
+** PGP
+openPGP (/Pretty Good Privacy/ z ang. /Dosyć dobra prywatność/), jest standardem szyfrowania i podpisywania cyfrowego dokumentów (RFC2440->RFC4880), stworzonego na potrzeby bezpiecznej komunikacji za pomocą niezabezpieczonego systemu email.
+
+W celu zapewnienia uwierzytelnienia (Podpisu cyfrowego) PGP używa funkcji hashującej oraz infrastruktury klucza publicznego.
+
+1. Nadający tworzy wiadomość
+2. Oprogramowanie generuje hash wiadmości
+3. Oprogramowanie generuje podpis z hashu wiadomości oraz klucza prywatnego nadającego
+4. Podpis jest załączany do wiadomości
+5. Oprogramowanie odbiorcy generuje hash wiadomości
+6. Oprogramowanie odbiorcy porównuje podpis z otrzymaną wiadomościa.
+
+*** Używanie PGP (gnuPGP)
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports both
+    rm examples/50bfile.sig
+    gpg --output examples/50bfile.sig --sign examples/50bfile.txt
+    hexdump examples/50bfile.sig
+#+end_src
+
+#+RESULTS:
+#+begin_example
+0000000 01a3 0a01 f502 90fd 030d 0800 a301 abef
+0000010 84ec a4fd 019f 43ac 0b62 3035 6662 6c69
+0000020 2e65 7874 6174 9cee 520f 6165 206c 6f73
+0000030 646c 6d20 2079 6e69 6320 6c61 2e6c 4920
+0000040 766e 7469 7461 6f69 206e 6e6f 6120 206e
+0000050 6461 6176 746e 6761 7365 890a b301 0004
+0000060 0801 1d00 2116 4504 e0ac da1c c41a ba32
+0000070 708c a338 abef 84ec a4fd 059f 6102 9cee
+0000080 000f 090a a310 abef 84ec a4fd a79f 0c32
+0000090 cd00 7bd1 e7e6 55f6 4b7f e6e7 d596 9ed3
+00000a0 57b3 963f d00d def8 d862 99c9 2914 073b
+00000b0 799e 773a 013c a1c9 2d97 b25f e376 0b2f
+00000c0 b260 7de5 119a 96cf e929 0294 94b8 7ee0
+00000d0 c000 bbf6 3b40 2ae5 08ae d815 cc94 ac22
+00000e0 5de8 22f7 0c35 f9e8 1f12 4bc8 c33e db82
+00000f0 5cf6 1f67 f5ee dd22 620a c7e4 c9c3 81f5
+0000100 1213 b1d0 3c66 0731 8728 353d 0e78 f435
+0000110 1b5b 136a d26f 6f2b b25b 6821 97dd 60a9
+0000120 0f82 ec27 d6f5 35ff a0f3 e9ee 6aed ff24
+0000130 ab43 44ec 86cd 54c1 5a71 c383 741b f778
+0000140 f8a2 5d69 902a d8e7 987c 4338 3135 3478
+0000150 d4bd 1281 4964 61ba 492d d0f6 319b fea4
+0000160 db26 06de 0c9a d865 aa28 dc70 486a aebe
+0000170 d47e ae71 beba dc28 f24b ec50 1b81 2540
+0000180 501c 5d2c 4026 bad7 a212 2297 04f1 923c
+0000190 3b4f dc45 d257 afdf 1901 ed49 9f59 4648
+00001a0 790f 18be 38c0 1315 8174 b039 ef2a bd62
+00001b0 50fd 9d1e 41bc f9bc b011 8c1f 8570 2b83
+00001c0 c582 b6bc 672e 46e8 0ea8 3300 c770 9171
+00001d0 5907 83c0 3c11 90c5 ee1b 2c53 ac12 2d69
+00001e0 b049 7d45 4062 ca10 f197 c3de eee4 27ac
+ye00001f0 71ce 06f8 aa1e 4715 abeb c7d1 1646 3e16
+0000200 059a f3a1 4e69 6b61 5fdb 39e2 634d 89c1
+0000210 00f3                                   
+0000211
+#+end_example
+
+Pierwsza część (0x8d bajtów) podpisanej wiadomości jest taka sama, pozostała cześć zmienia się za każdym razem gdy wiadomość jest podpisywana. Na początku jest nagłowek z informacjami o podmiocie który podpisał dokument, jakie algorytmy zostały wykorzystane w podpisie oraz oryginalna nazwa dokumentu oraz /plaintext/ wiadomości lub skompresowana wiadomość, po naglówku jest dołączany podpis cyfrowy.
+#+Caption: Widoczny tekst w podpisanej wiadomości
+[[./data/plaintext.png]]
+
+#+Caption: Potwierdzenie autentyczności wiadomości
+[[./data/podpis.png]]
+
+#+RESULTS:
+: Real sold my in call. Invitation on an advantages
+
+#+begin_src sh :shebang "#!/bin/bash" :results none :exports none
+      rm examples/50bfile.sig2
+#+end_src
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports none
+      gpg --output examples/50bfile.sig2 --sign examples/50bfile.txt
+      diff <(xxd examples/50bfile.sig2) <(xxd examples/50bfile.sig) -s
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sh :shebang "#!/bin/bash" :results none :exports none
+  rm examples/50bfile.dec.txt
+#+end_src
+
+#+RESULTS:
+
+Po podpisaniu pliku możemy go zamienić w naszą wiadomość za pomocą ~--decrypt~
+
+#+begin_src sh :shebang "#!/bin/bash" :results output :exports both
+  gpg --output examples/50bfile.dec.txt --decrypt examples/50bfile.sig
+  diff examples/50bfile.dec.txt examples/50bfile.txt -s
+#+end_src
+
+#+RESULTS:
+: Files examples/50bfile.dec.txt and examples/50bfile.txt are identical
+
+Możemy zobaczyć ró
+* Podsumowanie
+
+Szyfrowanie asymetryczne jest wykorzystywane obecnie na codzień przez miliardy ludzi, czy to używając hybrydowego podejscia do generowania kluczy sesji w HTTPS/TLS, poprzez pobieranie plików z sieci aż do podpisywania cyfrowego dokumentów i innych tworów (np. oprogramowania). Kryptografia klucza publicznego oraz metody wymiany ich kluczy pozwalają naszej przeglądarce zaufać stronie bankowości internetowej i wyswietlić zieloną kłódkę. Niestety nadal kryptografia polega głównie na wymienieniu kluczy za pomocą innych metod niż online. Patrząc przez przypadki takie jak Lenovo /superfish/ nadal polega na zaufaniu bazie certyfikatów dostarczonej poprzez przeglądarkę, system operacyjny, sprzęt komputerowy oraz na wydaniu poprawnych certyfikatów przez urzędy certifikacji zarówno lokalne, jak i krajowe a także największych graczy jak Google.
