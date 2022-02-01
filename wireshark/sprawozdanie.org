@@ -1,0 +1,58 @@
+#+TITLE: Sprawozdanie \\
+#+TITLE: Zastosowanie generatorów ruchu i narzędzi do monitorowania działania usług
+#+LANGUAGE: pl
+#+LATEX_HEADER: \usepackage[AUTO]{babel}
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+
+* Generator ruchu
+Generator ruchu sieciowego jest to oprogramowanie pozwalające na generowaniu specjalnych pakietów na rożnych poziomach modelu sieciowego. Niektóre generatory posiadają możliwośc analizy odpowiedzi oraz statystyk czasowych. Generator taki moży być użyty do analizy działania oprogramowania, to stress testów, do exploitów (np. ARP poisoning), ataków typu DOS, testowania dróg sieciowych. Dodatkowo mogą one pomóc w zrozumieniu zasad firewall, pomóc w rozwiązywania problemów z /packet corruption/ (np. spowodowany awariami sprzętowymi lub programistycznymi).
+** Licencjowanie
+#+CAPTION: Rozkład popularnych generatorów ruchu \
+#+CAPTION: - www.dnsstuff.com
+[[./dnsstuff.com.png]]
+
+Zwykle jest to oprogramowanie typu open source i/lub free software, czasami opracowane w oprawe graficzną i prekonfigurowane i sprzedawane jako oprogramowanie komercyjne z wersją testową
+
+* Nping Ncat Nmap
+Nping jest częscią projektu Nmap znanego administratorom systemów unixopodobnych (np. Linux) będącym rozszerzalnym narzędziem do mapowania portów z dużym naciskiem na konfigurowalnośc i automatyzacje. Podobnie jak Nmap jest to oprogramowanie free and open source i dziedziczy ono po tym projekcie rozszerzalność i konfigurowalność oraz łatwośc do automatyzacji.
+
+** Instalacja
+
+Nping jest pakietem dostępnym w wiekszości dystrybucji GNU/linux za pomocą głownego repozytorium. W ArchLinux jest to paczka extra/nmap.
+
+** Scenariusze
+Na target1 sa uruchomione dwie usługi sshd (tcp port 22) i apache2 (tcp port 80)
+
+Na source1 jest uruchomiona zapora ogniowa (~firewalld~) i usługa sshd (tcp port 22)
+
+*** TCP
+Wysyłany pakiet na zablokowany port source1 (~firewalld~)
+
+#+begin_src bash
+
+# nping --tcp -p 420 192.168.0.186
+
+Starting Nping 0.7.80 ( https://nmap.org/nping ) at 2022-01-13 06:26 CET
+SENT (0.0548s) TCP 192.168.0.103:54539 > 192.168.0.186:420 S ttl=64 id=38821 iplen=40  seq=97503692 win=1480
+RCVD (0.0551s) ICMP [192.168.0.186 > 192.168.0.103 Communication administratively prohibited by filtering (type=3/code=13) ] IP [ttl=64 id=65237 iplen=68 ]
+SENT (1.0552s) TCP 192.168.0.103:54539 > 192.168.0.186:420 S ttl=64 id=38821 iplen=40  seq=97503692 win=1480         RCVD (1.0556s) ICMP [192.168.0.186 > 192.168.0.103 Communication administratively prohibited by filtering (type=3/code=13) ] IP [ttl=64 id=65412 iplen=68 ]
+SENT (2.0567s) TCP 192.168.0.103:54539 > 192.168.0.186:420 S ttl=64 id=38821 iplen=40  seq=97503692 win=1480
+RCVD (2.0571s) ICMP [192.168.0.186 > 192.168.0.103 Communication administratively prohibited by filtering (type=3/code=13) ] IP [ttl=64 id=165 iplen=68 ]
+SENT (3.0583s) TCP 192.168.0.103:54539 > 192.168.0.186:420 S ttl=64 id=38821 iplen=40  seq=97503692 win=1480
+RCVD (3.0586s) ICMP [192.168.0.186 > 192.168.0.103 Communication administratively prohibited by filtering (type=3/code=13) ] IP [ttl=64 id=269 iplen=68 ]
+SENT (4.0598s) TCP 192.168.0.103:54539 > 192.168.0.186:420 S ttl=64 id=38821 iplen=40  seq=97503692 win=1480
+RCVD (4.0601s) ICMP [192.168.0.186 > 192.168.0.103 Communication administratively prohibited by filtering (type=3/code=13) ] IP [ttl=64 id=395 iplen=68 ]
+
+Max rtt: 0.227ms | Min rtt: 0.163ms | Avg rtt: 0.192ms
+Raw packets sent: 5 (200B) | Rcvd: 5 (340B) | Lost: 0 (0.00%)
+Nping done: 1 IP address pinged in 4.10 seconds
+
+#+end_src
+#+CAPTION: Zablokowany port przez firewalld
+[[./tcpblocked.png]]
+*** http/https
+
+*** IP
+*** Ethernet
+* Podsumowanie
+a
